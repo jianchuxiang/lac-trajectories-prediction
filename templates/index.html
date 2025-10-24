@@ -15,10 +15,10 @@
             --text-primary: #1F2937;
             --text-secondary: #6B7280;
             --border-color: #D1D5DB;
-            --success-bg: #D1FAE5;
-            --success-text: #065F46;
-            --error-bg: #FEE2E2;
-            --error-text: #991B1B;
+            --success-bg: #D1FAE5; /* 绿色背景 (Not Risk) */
+            --success-text: #065F46; /* 绿色文字 */
+            --error-bg: #FEE2E2;   /* 红色背景 (Risk) */
+            --error-text: #991B1B;   /* 红色文字 */
         }
 
         body {
@@ -229,8 +229,16 @@
                     throw new Error(result.error || `HTTP error! status: ${response.status}`);
                 }
 
-                // 更新结果区域的HTML内容和样式
-                resultDiv.classList.add('success');
+                // --- 【这里是您要求的修改】 ---
+                // 根据预测结果动态添加CSS类
+                if (result.prediction === 'Risk') {
+                    resultDiv.classList.add('error'); // 添加红色背景类
+                } else {
+                    resultDiv.classList.add('success'); // 添加绿色背景类
+                }
+                // --- 【修改结束】 ---
+
+                // 更新结果区域的HTML内容
                 resultDiv.innerHTML = `
                     <p><strong>Prediction:</strong> ${result.prediction}</p>
                     <p><strong>Probability of Risk:</strong> ${(result.probability_of_risk * 100).toFixed(2)}%</p>
