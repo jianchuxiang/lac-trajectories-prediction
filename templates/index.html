@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adverse Lactate Trajectories Combined Risk Model</title> <!-- 浏览器标签页标题 -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --primary-color: #3B82F6;
+            --primary-hover: #2563EB;
+            --background-color: #F3F4F6;
+            --card-background: #FFFFFF;
+            --text-primary: #1F2937;
+            --text-secondary: #6B7280;
+            --border-color: #D1D5DB;
+            --success-bg: #D1FAE5;
+            --success-text: #065F46;
+            --error-bg: #FEE2E2;
+            --error-text: #991B1B;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: var(--card-background);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 700px; /* 保持稍宽的布局 */
+            box-sizing: border-box;
+            border-top: 5px solid var(--primary-color);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: var(--text-primary);
+            margin: 0 0 10px 0;
+            font-size: 24px;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        #prediction-form {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 600px) {
+            #prediction-form {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        /* 确保上标 <sup> 标签不会增加行高 */
+        label sup {
+            line-height: 0; 
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+        }
+
+        button {
+            grid-column: 1 / -1;
+            padding: 15px;
+            background: linear-gradient(to right, #3B82F6, #60A5FA);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.3s;
+        }
+        button:hover {
+            box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.4);
+            transform: translateY(-2px);
+        }
+
+        #result {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.1em;
+            line-height: 1.6;
+            transition: all 0.3s;
+        }
+        #result.success { background-color: var(--success-bg); color: var(--success-text); }
+        #result.error { background-color: var(--error-bg); color: var(--error-text); }
+        #result p { margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <!-- 标题保持不变 -->
+            <h1>Adverse Lactate Trajectories Combined Risk Model (Class 2+3)</h1>
+            <p class="subtitle">Please enter the values for the following 10 metrics for risk assessment.</p>
+        </div>
+        
+        <form id="prediction-form">
+            <!-- 
+                【重要更新】
+                表单已根据您的新要求重新排序和命名。
+                <label> 显示您指定的名称和单位。
+                <input> 的 'name' 属性严格匹配您模型的新特征列表。
+             -->
+            <div class="form-group">
+                <label for="HR">HR (bpm)</label>
+                <input type="number" step="any" id="HR" name="HR" required placeholder="e.g., 80">
+            </div>
+            <div class="form-group">
+                <label for="WBC">WBC (10<sup>9</sup>/L)</label>
+                <input type="number" step="any" id="WBC" name="WBC" required placeholder="e.g., 7.5">
+            </div>
+            <div class="form-group">
+                <label for="BMI">BMI (kg/m<sup>2</sup>)</label>
+                <input type="number" step="any" id="BMI" name="BMI" required placeholder="e.g., 24.5">
+            </div>
+            <div class="form-group">
+                <label for="Alb">Alb (g/dL)</label>
+                <input type="number" step="any" id="Alb" name="Alb" required placeholder="e.g., 4.0">
+            </div>
+            <div class="form-group">
+                <label for="pH">pH</label>
+                <input type="number" step="any" id="pH" name="pH" required placeholder="e.g., 7.4">
+            </div>
+            <div class="form-group">
+                <label for="PaCO2">PaCO2 (mmHg)</label>
+                <input type="number" step="any" id="PaCO2" name="PaCO2" required placeholder="e.g., 40">
+            </div>
+            <div class="form-group">
+                <label for="AST">AST (U/L)</label>
+                <input type="number" step="any" id="AST" name="AST" required placeholder="e.g., 25">
+            </div>
+            <div class="form-group">
+                <label for="TBIL">TBil (mg/dL)</label>
+                <input type="number" step="any" id="TBIL" name="TBIL" required placeholder="e.g., 0.8">
+            </div>
+            <div class="form-group">
+                <label for="PT">PT (s)</label>
+                <input type="number" step="any" id="PT" name="PT" required placeholder="e.g., 12.5">
+            </div>
+            <div class="form-group">
+                <label for="APTT">APTT (s)</label>
+                <input type="number" step="any" id="APTT" name="APTT" required placeholder="e.g., 30">
+            </div>
+
+            <button type="submit">Predict</button>
+        </form>
+
+        <div id="result" style="display:none;"></div>
+    </div>
+
+    <script>
+        document.getElementById('prediction-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            const data = {};
+            // 将表单数据转换为 { "特征名": 数值 } 的格式
+            formData.forEach((value, key) => {
+                data[key] = parseFloat(value);
+            });
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = '';
+            resultDiv.innerText = 'Calculating...';
+
+            try {
+                // 发送POST请求到后端的 /predict 接口
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                // 解析返回的JSON数据
+                const result = await response.json();
+
+                if (!response.ok) {
+                    // 如果服务器返回错误状态码 (如400, 500)，则抛出错误
+                    throw new Error(result.error || `HTTP error! status: ${response.status}`);
+                }
+
+                // 更新结果区域的HTML内容和样式
+                resultDiv.classList.add('success');
+                resultDiv.innerHTML = `
+                    <p><strong>Prediction:</strong> ${result.prediction}</p>
+                    <p><strong>Probability of Risk:</strong> ${(result.probability_of_risk * 100).toFixed(2)}%</p>
+                `;
+
+            } catch (error) {
+                // 捕获网络错误或服务器返回的错误
+                console.error('Request failed:', error);
+                resultDiv.classList.add('error');
+                resultDiv.innerText = `Prediction Failed: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
+
